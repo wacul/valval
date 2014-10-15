@@ -95,6 +95,7 @@ func TestObjectValidator(t *testing.T) {
 			}
 			return nil
 		})
+		So(v1, ShouldNotEqual, v2)
 
 		st4 := t1{
 			A: "abc",

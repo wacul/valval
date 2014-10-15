@@ -53,7 +53,7 @@ func validateByFuncs(vfs []ValidatorFunc, val interface{}) error {
 		}
 	}
 	if len(errs) > 0 {
-		ret := ValueError(errs)
+		ret := valueError(errs)
 		return &ret
 	}
 	return nil

@@ -29,5 +29,16 @@ func TestSliceValidator(t *testing.T) {
 		So(v1.Validate(nil), ShouldNotBeNil)
 		So(v1.Validate(""), ShouldNotBeNil)
 		So(v1.Validate([]string{"a", "b"}), ShouldNotBeNil)
+
+		vf := func(slice []interface{}) error {
+			if slice[0].(int) != 10 || slice[1].(int) != 20 {
+				return errors.New("invalid slice!")
+			}
+			return nil
+		}
+		v2 := v1.Self(vf)
+		So(v1, ShouldNotEqual, v2)
+		So(v2.Validate([]int{10, 20, 30}), ShouldBeNil)
+		So(v2.Validate([]int{10, 10, 30}), ShouldNotBeNil)
 	})
 }

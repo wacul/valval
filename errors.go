@@ -7,53 +7,45 @@ type ErrorDescription struct {
 	Error error
 }
 
-type ValueError []error
+type valueError []error
 
-func (ve *ValueError) Error() string {
+func (ve *valueError) Error() string {
 	return "invalid value"
 }
 
-type ObjectFieldError struct {
+type objectErrorField struct {
 	Name string
 	Err  error
 }
 
-func (ofe *ObjectFieldError) Error() string {
-	return "invalid field value"
-}
+type objectError []*objectErrorField
 
-type ObjectError []*ObjectFieldError
-
-func (oe *ObjectError) Error() string {
+func (oe *objectError) Error() string {
 	return "invalid object"
 }
 
-type SliceElemError struct {
+type sliceErrorElem struct {
 	Index int
 	Err   error
 }
 
-func (see *SliceElemError) Error() string {
-	return "invalid slice value"
-}
+type sliceError []*sliceErrorElem
 
-type SliceError []*SliceElemError
-
-func (se *SliceError) Error() string {
+func (se *sliceError) Error() string {
 	return "invalid slice"
 }
 
 func Errors(err error, basePath string) []ErrorDescription {
 	ret := []ErrorDescription{}
 	switch t := err.(type) {
-	case *ValueError:
+	case *valueError:
 		for _, e := range *t {
 			ret = append(ret, ErrorDescription{
 				Path:  basePath,
 				Error: e,
 			})
 		}
-	case *ObjectError:
+	case *objectError:
 		for _, ofe := range *t {
 			nextBase := basePath
 			if nextBase != "" {
@@ -62,7 +54,7 @@ func Errors(err error, basePath string) []ErrorDescription {
 			nextBase += ofe.Name
 			ret = append(ret, Errors(ofe.Err, nextBase)...)
 		}
-	case *SliceError:
+	case *sliceError:
 		for _, see := range *t {
 			nextBase := basePath
 			nextBase += fmt.Sprintf("[%d]", see.Index)
@@ -74,18 +66,5 @@ func Errors(err error, basePath string) []ErrorDescription {
 			Error: t,
 		})
 	}
-
-	// if rp, ok := err.(ErrorReporter); ok {
-	// 	errs := rp.Errors()
-	// 	ret := make([]*ErrorDescription, len(errs))
-	// 	for i, e := range errs {
-	// 		//copy
-	// 		newE := *e
-	// 		if basePath == "" {
-	// 		} else {
-	// 		}
-	// 		ret[i] = &newE
-	// 	}
-	// }
 	return ret
 }

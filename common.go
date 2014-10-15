@@ -5,6 +5,12 @@ import (
 	"reflect"
 )
 
+type Validator interface {
+	Validate(val interface{}) error
+}
+
+type ValidatorFunc func(val interface{}) error
+
 func isNilValue(v reflect.Value) bool {
 	switch v.Kind() {
 	case reflect.Chan, reflect.Func, reflect.Map, reflect.Ptr,

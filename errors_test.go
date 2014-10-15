@@ -12,7 +12,7 @@ func TestErrors(t *testing.T) {
 	Convey("Errors", t, func() {
 		e1 := errors.New("error1")
 		e2 := errors.New("error2")
-		ve1 := ValueError([]error{
+		ve1 := valueError([]error{
 			e1, e2,
 		})
 
@@ -26,12 +26,12 @@ func TestErrors(t *testing.T) {
 			So(ed1[1].Error, ShouldEqual, e2)
 		})
 
-		oe1 := ObjectError([]*ObjectFieldError{
+		oe1 := objectError([]*objectErrorField{
 			{Name: "f1", Err: e1},
 			{Name: "f2", Err: e2},
 		})
 
-		oeNexted := ObjectError([]*ObjectFieldError{
+		oeNexted := objectError([]*objectErrorField{
 			{Name: "f1", Err: e1},
 			{Name: "nested", Err: &oe1},
 		})
@@ -62,7 +62,7 @@ func TestErrors(t *testing.T) {
 			So(edNested[2].Error, ShouldEqual, e2)
 		})
 
-		se1 := SliceError([]*SliceElemError{
+		se1 := sliceError([]*sliceErrorElem{
 			{Index: 0, Err: e1},
 			{Index: 1, Err: e2},
 		})
@@ -84,19 +84,19 @@ func TestErrors(t *testing.T) {
 		})
 
 		Convey("Mixed", func() {
-			eMixedInnerInner := ObjectError([]*ObjectFieldError{
+			eMixedInnerInner := objectError([]*objectErrorField{
 				{Name: "es3", Err: e1},
 			})
-			se := SliceError([]*SliceElemError{
+			se := sliceError([]*sliceErrorElem{
 				{Index: 2, Err: &eMixedInnerInner},
 			})
-			eMixedInner := ObjectError([]*ObjectFieldError{
+			eMixedInner := objectError([]*objectErrorField{
 				{Name: "es1", Err: e1},
 				{Name: "es2", Err: &ve1},
 				{Name: "nested2", Err: &se1},
 				{Name: "nested3", Err: &se},
 			})
-			eMixed := ObjectError([]*ObjectFieldError{
+			eMixed := objectError([]*objectErrorField{
 				{Name: "nested", Err: &eMixedInner},
 			})
 			e := Errors(&eMixed, "hoge.fuga")

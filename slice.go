@@ -1,9 +1,6 @@
 package valval
 
-import (
-	"errors"
-	"reflect"
-)
+import "reflect"
 
 type SliceValidator interface {
 	Validator
@@ -37,19 +34,19 @@ func (sv *sliceValidator) Validate(slice interface{}) error {
 }
 
 func (sv *sliceValidator) checkInner(is []interface{}) error {
-	var errs []*SliceElemError
+	var errs []*sliceErrorElem
 
 	for i, v := range is {
 		err := sv.inner.Validate(v)
 		if err != nil {
-			errs = append(errs, &SliceElemError{
+			errs = append(errs, &sliceErrorElem{
 				Index: i,
 				Err:   err,
 			})
 		}
 	}
 	if errs != nil {
-		ret := SliceError(errs)
+		ret := sliceError(errs)
 		return &ret
 	}
 	return nil
@@ -64,8 +61,8 @@ func (sv *sliceValidator) checkSelf(is []interface{}) error {
 		}
 	}
 	if len(errs) > 0 {
-		// TODO Detail
-		return errors.New("error")
+		ret := valueError(errs)
+		return &ret
 	}
 	return nil
 }
