@@ -2,29 +2,8 @@ package valval
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
-	"strings"
 )
-
-type SliceElemError struct {
-	Index int
-	Err   error
-}
-
-func (see SliceElemError) Error() string {
-	return fmt.Sprintf("%d : %s", see.Index, see.Err.Error())
-}
-
-type SliceError []SliceElemError
-
-func (se SliceError) Error() string {
-	buf := []string{}
-	for _, in := range se {
-		buf = append(buf, in.Error())
-	}
-	return strings.Join(buf, "\n")
-}
 
 type SliceValidator interface {
 	Validator

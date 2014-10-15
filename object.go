@@ -1,29 +1,6 @@
 package valval
 
-import (
-	"errors"
-	"fmt"
-	"strings"
-)
-
-type ObjectFieldError struct {
-	Name string
-	Err  error
-}
-
-func (ofe ObjectFieldError) Error() string {
-	return fmt.Sprintf("%s : %s", ofe.Name, ofe.Err.Error())
-}
-
-type ObjectError []ObjectFieldError
-
-func (oe ObjectError) Error() string {
-	buf := []string{}
-	for _, in := range oe {
-		buf = append(buf, in.Error())
-	}
-	return strings.Join(buf, "\n")
-}
+import "errors"
 
 type M map[string]Validator
 

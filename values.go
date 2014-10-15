@@ -44,6 +44,20 @@ type valueValidator struct {
 	vfuncs []ValidatorFunc
 }
 
+func validateByFuncs(vfs []ValidatorFunc, val interface{}) error {
+	errs := []error{}
+	for _, vf := range vfs {
+		err := vf(val)
+		if err != nil {
+			errs = append(errs, err)
+		}
+	}
+	if len(errs) > 0 {
+		return ValueError(errs)
+	}
+	return nil
+}
+
 func (v *valueValidator) Validate(val interface{}) error {
 	if val == nil {
 		return nil

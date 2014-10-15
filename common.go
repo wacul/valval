@@ -33,21 +33,6 @@ func unwrapPtr(val interface{}) interface{} {
 	return val
 }
 
-func validateByFuncs(vfs []ValidatorFunc, val interface{}) error {
-	errs := []error{}
-	for _, vf := range vfs {
-		err := vf(val)
-		if err != nil {
-			errs = append(errs, err)
-		}
-	}
-	if len(errs) > 0 {
-		// TODO Detail
-		return errors.New("error")
-	}
-	return nil
-}
-
 func obj2Map(val interface{}) (map[string]interface{}, error) {
 	if m, ok := val.(map[string]interface{}); ok {
 		return flattenMap(m), nil
