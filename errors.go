@@ -1,25 +1,15 @@
 package valval
 
-type PathError struct {
-	Path string
-	Err  error
-}
+import "fmt"
 
-type ErrorReporter interface {
-	Errors() []PathError
+type ErrorDescription struct {
+	Path  string
+	Error error
 }
 
 type ValueError []error
 
-func (ve *ValueError) Errors() []PathError {
-	ret := make([]PathError, len(*ve))
-	for i, e := range *ve {
-		ret[i].Err = e
-	}
-	return ret
-}
-
-func (ve ValueError) Error() string {
+func (ve *ValueError) Error() string {
 	return "invalid value"
 }
 
@@ -28,13 +18,13 @@ type ObjectFieldError struct {
 	Err  error
 }
 
-func (ofe ObjectFieldError) Error() string {
+func (ofe *ObjectFieldError) Error() string {
 	return "invalid field value"
 }
 
-type ObjectError []ObjectFieldError
+type ObjectError []*ObjectFieldError
 
-func (oe ObjectError) Error() string {
+func (oe *ObjectError) Error() string {
 	return "invalid object"
 }
 
@@ -43,12 +33,59 @@ type SliceElemError struct {
 	Err   error
 }
 
-func (see SliceElemError) Error() string {
+func (see *SliceElemError) Error() string {
 	return "invalid slice value"
 }
 
-type SliceError []SliceElemError
+type SliceError []*SliceElemError
 
-func (se SliceError) Error() string {
+func (se *SliceError) Error() string {
 	return "invalid slice"
+}
+
+func Errors(err error, basePath string) []ErrorDescription {
+	ret := []ErrorDescription{}
+	switch t := err.(type) {
+	case *ValueError:
+		for _, e := range *t {
+			ret = append(ret, ErrorDescription{
+				Path:  basePath,
+				Error: e,
+			})
+		}
+	case *ObjectError:
+		for _, ofe := range *t {
+			nextBase := basePath
+			if nextBase != "" {
+				nextBase += "."
+			}
+			nextBase += ofe.Name
+			ret = append(ret, Errors(ofe.Err, nextBase)...)
+		}
+	case *SliceError:
+		for _, see := range *t {
+			nextBase := basePath
+			nextBase += fmt.Sprintf("[%d]", see.Index)
+			ret = append(ret, Errors(see.Err, nextBase)...)
+		}
+	default:
+		ret = append(ret, ErrorDescription{
+			Path:  basePath,
+			Error: t,
+		})
+	}
+
+	// if rp, ok := err.(ErrorReporter); ok {
+	// 	errs := rp.Errors()
+	// 	ret := make([]*ErrorDescription, len(errs))
+	// 	for i, e := range errs {
+	// 		//copy
+	// 		newE := *e
+	// 		if basePath == "" {
+	// 		} else {
+	// 		}
+	// 		ret[i] = &newE
+	// 	}
+	// }
+	return ret
 }

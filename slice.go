@@ -37,19 +37,20 @@ func (sv *sliceValidator) Validate(slice interface{}) error {
 }
 
 func (sv *sliceValidator) checkInner(is []interface{}) error {
-	var errs []SliceElemError
+	var errs []*SliceElemError
 
 	for i, v := range is {
 		err := sv.inner.Validate(v)
 		if err != nil {
-			errs = append(errs, SliceElemError{
+			errs = append(errs, &SliceElemError{
 				Index: i,
 				Err:   err,
 			})
 		}
 	}
 	if errs != nil {
-		return SliceError(errs)
+		ret := SliceError(errs)
+		return &ret
 	}
 	return nil
 }

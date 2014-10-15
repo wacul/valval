@@ -35,12 +35,12 @@ func (ov *objectValidator) Validate(val interface{}) error {
 }
 
 func (ov *objectValidator) checkInner(valMap map[string]interface{}) error {
-	var errs []ObjectFieldError
+	var errs []*ObjectFieldError
 	for k, fv := range ov.vMap {
 		fValue := valMap[k]
 		err := fv.Validate(fValue)
 		if err != nil {
-			errs = append(errs, ObjectFieldError{
+			errs = append(errs, &ObjectFieldError{
 				Name: k,
 				Err:  err,
 			})
@@ -48,7 +48,8 @@ func (ov *objectValidator) checkInner(valMap map[string]interface{}) error {
 	}
 
 	if errs != nil {
-		return ObjectError(errs)
+		ret := ObjectError(errs)
+		return &ret
 	}
 	return nil
 }
