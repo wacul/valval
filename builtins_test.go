@@ -132,7 +132,7 @@ func TestBuiltins(t *testing.T) {
 			So(or("def"), ShouldBeNil)
 		})
 
-		Convey("Or", func() {
+		Convey("RequiredFields", func() {
 			req := RequiredFields("A", "B", "C")
 			So(
 				req(map[string]interface{}{}),
