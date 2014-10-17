@@ -15,10 +15,11 @@ type objectValidator struct {
 }
 
 func (ov *objectValidator) Validate(val interface{}) error {
-	if val == nil {
+	uw := unwrapPtr(val)
+	if uw == nil {
 		return nil
 	}
-	valMap, err := obj2Map(val)
+	valMap, err := obj2Map(uw)
 	if err != nil {
 		return typeMissmatchError("object")
 	}

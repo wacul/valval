@@ -110,3 +110,32 @@ func Or(funcs ...ValidatorFunc) ValidatorFunc {
 		return firstError
 	}
 }
+
+func MinSliceLength(min int) SliceValidatorFunc {
+	return func(slice []interface{}) error {
+		if len(slice) < min {
+			return errf("length must be %d or greater", min)
+		}
+		return nil
+	}
+}
+
+func MaxSliceLength(max int) SliceValidatorFunc {
+	return func(slice []interface{}) error {
+		if len(slice) > max {
+			return errf("length must be %d or less", max)
+		}
+		return nil
+	}
+}
+
+func RequiredFields(fs ...string) ObjectValidatorFunc {
+	return func(content map[string]interface{}) error {
+		for _, f := range fs {
+			if content[f] == nil {
+				return errf("field %s is required", f)
+			}
+		}
+		return nil
+	}
+}
