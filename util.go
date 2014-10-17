@@ -51,3 +51,17 @@ func NewIntValidator(inner func(int64) error) ValidatorFunc {
 		return typeMissmatchError("integer")
 	}
 }
+
+func NewBoolValidator(inner func(bool) error) ValidatorFunc {
+	return func(val interface{}) error {
+		if val == nil {
+			return nil
+		}
+
+		rv := reflect.ValueOf(val)
+		if rv.Kind() == reflect.Bool {
+			return inner(rv.Bool())
+		}
+		return typeMissmatchError("integer")
+	}
+}

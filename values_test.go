@@ -50,5 +50,22 @@ func TestValuValidators(t *testing.T) {
 			checkValid(String(s1), "abcd", false)
 			checkValid(String(s1), 123, false)
 		})
+
+		Convey("bool", func() {
+			checkValid(Bool(), "abc", false)
+			checkValid(Bool(), 123, false)
+			checkValid(Bool(), struct{}{}, false)
+			checkValid(Bool(), nil, true)
+			checkValid(Bool(), true, true)
+			checkValid(Bool(), false, true)
+		})
+
+		Convey("any", func() {
+			checkValid(Any(), "abc", true)
+			checkValid(Any(), 123, true)
+			checkValid(Any(), true, true)
+			checkValid(Any(), struct{}{}, true)
+			checkValid(Any(), nil, true)
+		})
 	})
 }

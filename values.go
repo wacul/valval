@@ -5,7 +5,8 @@ import "reflect"
 type valType int
 
 const (
-	t_number valType = iota
+	t_any valType = iota
+	t_number
 	t_string
 	t_bool
 )
@@ -17,6 +18,9 @@ var vtStrings = map[valType]string{
 }
 
 func (vt *valType) isKindOfType(val interface{}) bool {
+	if *vt == t_any {
+		return true
+	}
 	uvt := unwrapPtr(val)
 	if uvt == nil {
 		return false
@@ -86,6 +90,12 @@ func String(vfuncs ...ValidatorFunc) Validator {
 func Bool(vfuncs ...ValidatorFunc) Validator {
 	return &valueValidator{
 		vt:     t_bool,
+		vfuncs: vfuncs,
+	}
+}
+
+func Any(vfuncs ...ValidatorFunc) Validator {
+	return &valueValidator{
 		vfuncs: vfuncs,
 	}
 }
