@@ -77,6 +77,20 @@ func TestBuiltins(t *testing.T) {
 			So(ml("abcd"), ShouldNotBeNil)
 		})
 
+		Convey("MinSliceLength", func() {
+			ml := MinSliceLength(3)
+			So(ml([]interface{}{}), ShouldNotBeNil)
+			So(ml([]interface{}{1, 2, 3}), ShouldBeNil)
+			So(ml([]interface{}{1, 2, 3, 4}), ShouldBeNil)
+		})
+
+		Convey("MaxSliceLength", func() {
+			ml := MaxSliceLength(3)
+			So(ml([]interface{}{}), ShouldBeNil)
+			So(ml([]interface{}{1, 2, 3}), ShouldBeNil)
+			So(ml([]interface{}{1, 2, 3, 4}), ShouldNotBeNil)
+		})
+
 		Convey("Regexp", func() {
 			re := Regexp(regexp.MustCompile(`abc[0-9]{1,3}`))
 			So(re("abc"), ShouldNotBeNil)
@@ -116,6 +130,30 @@ func TestBuiltins(t *testing.T) {
 			So(or("cde"), ShouldNotBeNil)
 			So(or("abc"), ShouldBeNil)
 			So(or("def"), ShouldBeNil)
+		})
+
+		Convey("Or", func() {
+			req := RequiredFields("A", "B", "C")
+			So(
+				req(map[string]interface{}{}),
+				ShouldNotBeNil,
+			)
+			So(
+				req(map[string]interface{}{
+					"A": 1,
+					"B": 2,
+					"C": 3,
+				}),
+				ShouldBeNil,
+			)
+			So(
+				req(map[string]interface{}{
+					"A": 1,
+					"B": 2,
+					"D": 3,
+				}),
+				ShouldNotBeNil,
+			)
 		})
 	})
 }
