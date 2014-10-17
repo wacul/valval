@@ -37,6 +37,9 @@ func (se *sliceError) Error() string {
 
 func Errors(err error, basePath string) []ErrorDescription {
 	ret := []ErrorDescription{}
+	if err == nil {
+		return ret
+	}
 	switch t := err.(type) {
 	case *valueError:
 		for _, e := range *t {

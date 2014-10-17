@@ -40,6 +40,9 @@ func unwrapPtr(val interface{}) interface{} {
 }
 
 func obj2Map(val interface{}) (map[string]interface{}, error) {
+	if val == nil {
+		return nil, nil
+	}
 	if m, ok := val.(map[string]interface{}); ok {
 		return flattenMap(m), nil
 	}

@@ -40,11 +40,6 @@ func TestObjectValidator(t *testing.T) {
 			"E": Number(i1),
 			"F": Bool(),
 		})
-
-		So(v1.Validate(1), ShouldNotBeNil)
-		So(v1.Validate("aa"), ShouldNotBeNil)
-		So(v1.Validate(true), ShouldNotBeNil)
-
 		st1 := t1{
 			A: "abc",
 			B: 1,
@@ -70,51 +65,73 @@ func TestObjectValidator(t *testing.T) {
 			E: &st1.B,
 			F: &st1.C,
 		}
-		So(v1.Validate(st3), ShouldNotBeNil)
 
-		m1 := map[string]interface{}{
-			"A": "abc",
-			"B": 1,
-			"C": false,
-		}
-		So(v1.Validate(m1), ShouldBeNil)
+		Convey("object", func() {
+			So(v1.Validate(1), ShouldNotBeNil)
+			So(v1.Validate("aa"), ShouldNotBeNil)
+			So(v1.Validate(true), ShouldNotBeNil)
 
-		m2 := map[string]interface{}{
-			"A": "abc",
-			"B": 1,
-			"C": false,
-			"D": &st1.A,
-			"E": &st1.B,
-			"F": &st1.C,
-		}
-		So(v1.Validate(m2), ShouldBeNil)
-
-		v2 := v1.Self(func(content map[string]interface{}) error {
-			if content["D"] == nil && content["E"] == nil {
-				return errors.New("D and E needed")
-			}
-			return nil
+			So(v1.Validate(st3), ShouldNotBeNil)
 		})
-		So(v1, ShouldNotEqual, v2)
 
-		st4 := t1{
-			A: "abc",
-			B: 1,
-			C: false,
-			D: nil,
-			E: &st1.B,
-			F: &st1.C,
-		}
-		So(v2.Validate(st4), ShouldBeNil)
+		Convey("map", func() {
+			m1 := map[string]interface{}{
+				"A": "abc",
+				"B": 1,
+				"C": false,
+			}
+			So(v1.Validate(m1), ShouldBeNil)
 
-		st5 := t1{
-			A: "abc",
-			B: 1,
-			C: false,
-			D: nil,
-			E: nil,
-			F: &st1.C,
-		}
-		So(v2.Validate(st5), ShouldNotBeNil)
+			m2 := map[string]interface{}{
+				"A": "abc",
+				"B": 1,
+				"C": false,
+				"D": &st1.A,
+				"E": &st1.B,
+				"F": &st1.C,
+			}
+			So(v1.Validate(m2), ShouldBeNil)
+
+			v2 := v1.Self(func(content map[string]interface{}) error {
+				if content["D"] == nil && content["E"] == nil {
+					return errors.New("D and E needed")
+				}
+				return nil
+			})
+			So(v1, ShouldNotEqual, v2)
+
+			st4 := t1{
+				A: "abc",
+				B: 1,
+				C: false,
+				D: nil,
+				E: &st1.B,
+				F: &st1.C,
+			}
+			So(v2.Validate(st4), ShouldBeNil)
+
+			st5 := t1{
+				A: "abc",
+				B: 1,
+				C: false,
+				D: nil,
+				E: nil,
+				F: &st1.C,
+			}
+			So(v2.Validate(st5), ShouldNotBeNil)
+
+		})
+
+		Convey("Pointer nil", func() {
+			type t2 struct {
+				P *t1
+			}
+			v := Object(M{
+				"P": Object(M{}),
+			})
+			o := t1{}
+			So(v.Validate(o), ShouldBeNil)
+		})
 	})
+
 }
