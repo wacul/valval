@@ -68,9 +68,9 @@ func TestObjectValidator(t *testing.T) {
 
 		Convey("object", func() {
 			So(v1.Validate(1), ShouldNotBeNil)
+			So(v1.Validate(nil), ShouldBeNil)
 			So(v1.Validate("aa"), ShouldNotBeNil)
 			So(v1.Validate(true), ShouldNotBeNil)
-
 			So(v1.Validate(st3), ShouldNotBeNil)
 		})
 

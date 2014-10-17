@@ -15,6 +15,9 @@ type sliceValidator struct {
 }
 
 func (sv *sliceValidator) Validate(slice interface{}) error {
+	if slice == nil {
+		return nil
+	}
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
 		return typeMissmatchError("slice")

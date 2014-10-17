@@ -57,6 +57,26 @@ func TestBuiltins(t *testing.T) {
 			So(max("11"), ShouldNotBeNil) // don't convert implicitly
 		})
 
+		Convey("MinLength", func() {
+			ml := MinLength(3)
+			So(ml(2), ShouldNotBeNil)
+
+			So(ml("a"), ShouldNotBeNil)
+			So(ml("ab"), ShouldNotBeNil)
+			So(ml("abc"), ShouldBeNil)
+			So(ml("abcd"), ShouldBeNil)
+		})
+
+		Convey("MaxLength", func() {
+			ml := MaxLength(3)
+			So(ml(2), ShouldNotBeNil)
+
+			So(ml("a"), ShouldBeNil)
+			So(ml("ab"), ShouldBeNil)
+			So(ml("abc"), ShouldBeNil)
+			So(ml("abcd"), ShouldNotBeNil)
+		})
+
 		Convey("Regexp", func() {
 			re := Regexp(regexp.MustCompile(`abc[0-9]{1,3}`))
 			So(re("abc"), ShouldNotBeNil)

@@ -18,7 +18,7 @@ func TestE2E(t *testing.T) {
 		Attr *PersonAttr
 	}
 	Convey("E2E", t, func() {
-		Convey("struct", func() {
+		Convey("empty struct", func() {
 			vPersonAttr := Object(M{
 				"IsProgrammer": Bool(),
 				"Height": Number(
@@ -29,6 +29,27 @@ func TestE2E(t *testing.T) {
 
 			vPerson := Object(M{
 				"Name": String(),
+				"Attr": vPersonAttr,
+			})
+
+			p := Person{}
+
+			So(vPerson.Validate(p), ShouldBeNil)
+		})
+		Convey("empty struct", func() {
+			vPersonAttr := Object(M{
+				"IsProgrammer": Bool(),
+				"Height": Number(
+					Min(100.0),
+					Max(250.0),
+				),
+				"Foo": Slice(Number()),
+			})
+
+			vPerson := Object(M{
+				"Name": String(
+					MaxLength(10),
+				),
 				"Attr": vPersonAttr,
 			})
 

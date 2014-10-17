@@ -55,6 +55,24 @@ func Regexp(r *regexp.Regexp) ValidatorFunc {
 	})
 }
 
+func MinLength(min int) ValidatorFunc {
+	return NewStringValidator(func(str string) error {
+		if len(str) < min {
+			return errf("length must be %d or greater", min)
+		}
+		return nil
+	})
+}
+
+func MaxLength(max int) ValidatorFunc {
+	return NewStringValidator(func(str string) error {
+		if len(str) > max {
+			return errf("length must be %d or less", max)
+		}
+		return nil
+	})
+}
+
 func In(targetValues ...interface{}) ValidatorFunc {
 	return func(val interface{}) error {
 		for _, tv := range targetValues {

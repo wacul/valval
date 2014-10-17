@@ -15,6 +15,9 @@ type objectValidator struct {
 }
 
 func (ov *objectValidator) Validate(val interface{}) error {
+	if val == nil {
+		return nil
+	}
 	valMap, err := obj2Map(val)
 	if err != nil {
 		return typeMissmatchError("object")

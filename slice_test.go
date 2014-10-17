@@ -25,8 +25,8 @@ func TestSliceValidator(t *testing.T) {
 		So(v1.Validate([]int{1, 2, 3}), ShouldBeNil)
 		So(v1.Validate([]*int{intptr(1), intptr(2), intptr(3)}), ShouldBeNil)
 		So(v1.Validate([]int{1, 2, 3, 101}), ShouldNotBeNil)
+		So(v1.Validate(nil), ShouldBeNil)
 		So(v1.Validate(1), ShouldNotBeNil)
-		So(v1.Validate(nil), ShouldNotBeNil)
 		So(v1.Validate(""), ShouldNotBeNil)
 		So(v1.Validate([]string{"a", "b"}), ShouldNotBeNil)
 
