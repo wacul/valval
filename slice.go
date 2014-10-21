@@ -2,19 +2,14 @@ package valval
 
 import "reflect"
 
-type SliceValidator interface {
-	Validator
-	Self(...SliceValidatorFunc) SliceValidator
-}
-
 type SliceValidatorFunc func(slice []interface{}) error
 
-type sliceValidator struct {
+type SliceValidator struct {
 	inner      Validator
 	selfVfuncs []SliceValidatorFunc
 }
 
-func (sv *sliceValidator) Validate(slice interface{}) error {
+func (sv *SliceValidator) Validate(slice interface{}) error {
 	if slice == nil {
 		return nil
 	}
@@ -36,7 +31,7 @@ func (sv *sliceValidator) Validate(slice interface{}) error {
 	return nil
 }
 
-func (sv *sliceValidator) checkInner(is []interface{}) error {
+func (sv *SliceValidator) checkInner(is []interface{}) error {
 	var errs []*sliceErrorElem
 
 	for i, v := range is {
@@ -55,7 +50,7 @@ func (sv *sliceValidator) checkInner(is []interface{}) error {
 	return nil
 }
 
-func (sv *sliceValidator) checkSelf(is []interface{}) error {
+func (sv *SliceValidator) checkSelf(is []interface{}) error {
 	errs := []error{}
 	for _, svf := range sv.selfVfuncs {
 		err := svf(is)
@@ -70,15 +65,15 @@ func (sv *sliceValidator) checkSelf(is []interface{}) error {
 	return nil
 }
 
-func (sv *sliceValidator) Self(vfs ...SliceValidatorFunc) SliceValidator {
+func (sv *SliceValidator) Self(vfs ...SliceValidatorFunc) *SliceValidator {
 	// copy
 	newSv := *sv
 	newSv.selfVfuncs = vfs
 	return &newSv
 }
 
-func Slice(inner Validator) SliceValidator {
-	return &sliceValidator{
+func Slice(inner Validator) *SliceValidator {
+	return &SliceValidator{
 		inner: inner,
 	}
 }

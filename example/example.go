@@ -47,7 +47,7 @@ func main() {
 		},
 	}
 	if err := personValidator.Validate(person); err != nil {
-		errs := valval.Errors(err, "Person")
+		errs := valval.Errors(err)
 		for _, errInfo := range errs {
 			fmt.Printf("%s : %v\n", errInfo.Path, errInfo.Error)
 		}
@@ -63,7 +63,7 @@ func main() {
 		},
 	}
 	if err := personValidator.Validate(personMap); err != nil {
-		errs := valval.Errors(err, "Person")
+		errs := valval.Errors(err)
 		for _, errInfo := range errs {
 			fmt.Printf("%s : %v\n", errInfo.Path, errInfo.Error)
 		}

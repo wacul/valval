@@ -4,17 +4,12 @@ type M map[string]Validator
 
 type ObjectValidatorFunc func(content map[string]interface{}) error
 
-type ObjectValidator interface {
-	Validator
-	Self(...ObjectValidatorFunc) ObjectValidator
-}
-
-type objectValidator struct {
+type ObjectValidator struct {
 	vMap       M
 	selfVfuncs []ObjectValidatorFunc
 }
 
-func (ov *objectValidator) Validate(val interface{}) error {
+func (ov *ObjectValidator) Validate(val interface{}) error {
 	uw := unwrapPtr(val)
 	if uw == nil {
 		return nil
@@ -36,15 +31,16 @@ func (ov *objectValidator) Validate(val interface{}) error {
 	return nil
 }
 
-func (ov *objectValidator) checkInner(valMap map[string]interface{}) error {
+func (ov *ObjectValidator) checkInner(valMap map[string]objField) error {
 	var errs []*objectErrorField
 	for k, fv := range ov.vMap {
 		fValue := valMap[k]
-		err := fv.Validate(fValue)
+		err := fv.Validate(fValue.value)
 		if err != nil {
 			errs = append(errs, &objectErrorField{
 				Name: k,
 				Err:  err,
+				Tag:  fValue.tag,
 			})
 		}
 	}
@@ -56,10 +52,10 @@ func (ov *objectValidator) checkInner(valMap map[string]interface{}) error {
 	return nil
 }
 
-func (ov *objectValidator) checkSelf(valMap map[string]interface{}) error {
+func (ov *ObjectValidator) checkSelf(valMap map[string]objField) error {
 	errs := []error{}
 	for _, svf := range ov.selfVfuncs {
-		err := svf(valMap)
+		err := svf(fieldMap2objMap(valMap))
 		if err != nil {
 			errs = append(errs, err)
 		}
@@ -71,15 +67,15 @@ func (ov *objectValidator) checkSelf(valMap map[string]interface{}) error {
 	return nil
 }
 
-func (ov *objectValidator) Self(vfs ...ObjectValidatorFunc) ObjectValidator {
+func (ov *ObjectValidator) Self(vfs ...ObjectValidatorFunc) *ObjectValidator {
 	// copy
 	newOv := *ov
 	newOv.selfVfuncs = vfs
 	return &newOv
 }
 
-func Object(m M) ObjectValidator {
-	return &objectValidator{
+func Object(m M) *ObjectValidator {
+	return &ObjectValidator{
 		vMap: m,
 	}
 }

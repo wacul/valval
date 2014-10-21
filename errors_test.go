@@ -2,6 +2,7 @@ package valval
 
 import (
 	"errors"
+	"reflect"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -17,7 +18,7 @@ func TestErrors(t *testing.T) {
 		})
 
 		Convey("Value", func() {
-			ed1 := Errors(&ve1, "")
+			ed1 := Errors(&ve1)
 
 			So(len(ed1), ShouldEqual, 2)
 			So(ed1[0].Path, ShouldBeEmpty)
@@ -38,21 +39,21 @@ func TestErrors(t *testing.T) {
 
 		Convey("Object", func() {
 
-			ed1 := Errors(&oe1, "")
+			ed1 := Errors(&oe1)
 			So(len(ed1), ShouldEqual, 2)
 			So(ed1[0].Path, ShouldEqual, "f1")
 			So(ed1[1].Path, ShouldEqual, "f2")
 			So(ed1[0].Error, ShouldEqual, e1)
 			So(ed1[1].Error, ShouldEqual, e2)
 
-			ed2 := Errors(&oe1, "base")
+			ed2 := ErrorsBase(&oe1, "base")
 			So(len(ed2), ShouldEqual, 2)
 			So(ed2[0].Path, ShouldEqual, "base.f1")
 			So(ed2[1].Path, ShouldEqual, "base.f2")
 			So(ed2[0].Error, ShouldEqual, e1)
 			So(ed2[1].Error, ShouldEqual, e2)
 
-			edNested := Errors(&oeNexted, "base")
+			edNested := ErrorsBase(&oeNexted, "base")
 			So(len(edNested), ShouldEqual, 3)
 			So(edNested[0].Path, ShouldEqual, "base.f1")
 			So(edNested[1].Path, ShouldEqual, "base.nested.f1")
@@ -68,14 +69,14 @@ func TestErrors(t *testing.T) {
 		})
 
 		Convey("Slice", func() {
-			ed1 := Errors(&se1, "")
+			ed1 := ErrorsBase(&se1, "")
 			So(len(ed1), ShouldEqual, 2)
 			So(ed1[0].Path, ShouldEqual, "[0]")
 			So(ed1[1].Path, ShouldEqual, "[1]")
 			So(ed1[0].Error, ShouldEqual, e1)
 			So(ed1[1].Error, ShouldEqual, e2)
 
-			ed2 := Errors(&se1, "base")
+			ed2 := ErrorsBase(&se1, "base")
 			So(len(ed2), ShouldEqual, 2)
 			So(ed2[0].Path, ShouldEqual, "base[0]")
 			So(ed2[1].Path, ShouldEqual, "base[1]")
@@ -99,7 +100,7 @@ func TestErrors(t *testing.T) {
 			eMixed := objectError([]*objectErrorField{
 				{Name: "nested", Err: &eMixedInner},
 			})
-			e := Errors(&eMixed, "hoge.fuga")
+			e := ErrorsBase(&eMixed, "hoge.fuga")
 			So(len(e), ShouldEqual, 6)
 			So(e[0].Path, ShouldEqual, "hoge.fuga.nested.es1")
 			So(e[1].Path, ShouldEqual, "hoge.fuga.nested.es2")
@@ -107,6 +108,32 @@ func TestErrors(t *testing.T) {
 			So(e[3].Path, ShouldEqual, "hoge.fuga.nested.nested2[0]")
 			So(e[4].Path, ShouldEqual, "hoge.fuga.nested.nested2[1]")
 			So(e[5].Path, ShouldEqual, "hoge.fuga.nested.nested3[2].es3")
+		})
+
+		Convey("JSONPath", func() {
+			eMixedInnerInner := objectError([]*objectErrorField{
+				{Name: "es3", Err: e1},
+			})
+			se := sliceError([]*sliceErrorElem{
+				{Index: 2, Err: &eMixedInnerInner},
+			})
+			eMixedInner := objectError([]*objectErrorField{
+				{Name: "es1", Err: e1, Tag: reflect.StructTag(`json:"Es1"`)},
+				{Name: "es2", Err: &ve1},
+				{Name: "nested2", Err: &se1},
+				{Name: "nested3", Err: &se, Tag: reflect.StructTag(`json:"Nested3"`)},
+			})
+			eMixed := objectError([]*objectErrorField{
+				{Name: "nested", Err: &eMixedInner},
+			})
+			e := JSONErrorsBase(&eMixed, "hoge.fuga")
+			So(len(e), ShouldEqual, 6)
+			So(e[0].Path, ShouldEqual, "hoge.fuga.nested.Es1")
+			So(e[1].Path, ShouldEqual, "hoge.fuga.nested.es2")
+			So(e[2].Path, ShouldEqual, "hoge.fuga.nested.es2")
+			So(e[3].Path, ShouldEqual, "hoge.fuga.nested.nested2[0]")
+			So(e[4].Path, ShouldEqual, "hoge.fuga.nested.nested2[1]")
+			So(e[5].Path, ShouldEqual, "hoge.fuga.nested.Nested3[2].es3")
 		})
 	})
 }

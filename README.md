@@ -1,7 +1,4 @@
-# Valval
-
-[ ![Codeship Status for tutuming/valval](https://www.codeship.io/projects/59f9c260-37f9-0132-e8f4-461894a5379e/status)](https://www.codeship.io/projects/41854)
-[![Coverage Status](https://coveralls.io/repos/tutuming/valval/badge.png?branch=master)](https://coveralls.io/r/tutuming/valval?branch=master)
+# Valval [ ![Codeship Status for tutuming/valval](https://www.codeship.io/projects/59f9c260-37f9-0132-e8f4-461894a5379e/status)](https://www.codeship.io/projects/41854) [![Coverage Status](https://coveralls.io/repos/tutuming/valval/badge.png?branch=master)](https://coveralls.io/r/tutuming/valval?branch=master)
 
 Valval is simple validation library for Go.
 
@@ -50,17 +47,17 @@ person := &Person{
 	},
 }
 if err := personValidator.Validate(person); err != nil {
-	errs := valval.Errors(err, "Person")
+	errs := valval.Errors(err)
 	for _, errInfo := range errs {
 		fmt.Printf("%s : %v\n", errInfo.Path, errInfo.Error)
 	}
 }
 /* outputs
-Person.Attr.Age : must be 200 or less
-Person.Attr.Gender : invalid value. allowed are [male female]
-Person.Attr.Tags[0] : length must be 1 or greater
-Person.Attr.Tags[1] : length must be 10 or less
-Person.Name : must be match to the regexp ^[a-z ]+$
+Attr.Age : must be 200 or less
+Attr.Gender : invalid value. allowed are [male female]
+Attr.Tags[0] : length must be 1 or greater
+Attr.Tags[1] : length must be 10 or less
+Name : must be match to the regexp ^[a-z ]+$
 */
 
 ```
@@ -77,7 +74,7 @@ personMap := map[string]interface{}{
 	},
 }
 if err := personValidator.Validate(personMap); err != nil {
-	errs := valval.Errors(err, "Person")
+	errs := valval.Errors(err)
 	for _, errInfo := range errs {
 		fmt.Printf("%s : %v\n", errInfo.Path, errInfo.Error)
 	}

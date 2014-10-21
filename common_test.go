@@ -3,6 +3,8 @@ package valval
 import (
 	"reflect"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestUnwrapPtr(t *testing.T) {
@@ -42,29 +44,25 @@ func TestUnwrapPtr(t *testing.T) {
 }
 
 func TestObj2Map(t *testing.T) {
-	s := "def"
-	t1 := struct {
-		A string
-		B *string
-		C *string
-		D int
-	}{
-		"abc",
-		&s,
-		nil,
-		100,
-	}
-	exp1 := map[string]interface{}{
-		"A": "abc",
-		"B": "def",
-		"C": nil,
-		"D": 100,
-	}
-	act1, err := obj2Map(t1)
-	if err != nil {
-		t.Error(err)
-	}
-	if !reflect.DeepEqual(act1, exp1) {
-		t.Errorf("%v must equal %v", act1, exp1)
-	}
+	Convey("obj2map", t, func() {
+		s := "def"
+		t1 := struct {
+			A string `tag1:"123" tag2:"abc"`
+			B *string
+			C *string
+			D int
+		}{
+			"abc",
+			&s,
+			nil,
+			100,
+		}
+		act, err := obj2Map(t1)
+		if err != nil {
+			t.Error(err)
+		}
+		So(act["A"].value, ShouldEqual, "abc")
+		So(act["A"].tag.Get("tag1"), ShouldEqual, "123")
+		So(act["A"].tag.Get("tag2"), ShouldEqual, "abc")
+	})
 }

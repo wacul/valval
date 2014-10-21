@@ -1,6 +1,10 @@
 package valval
 
-import "fmt"
+import (
+	"fmt"
+	"reflect"
+	"strings"
+)
 
 type ErrorDescription struct {
 	Path  string
@@ -16,6 +20,7 @@ func (ve *valueError) Error() string {
 type objectErrorField struct {
 	Name string
 	Err  error
+	Tag  reflect.StructTag
 }
 
 type objectError []*objectErrorField
@@ -35,7 +40,23 @@ func (se *sliceError) Error() string {
 	return "invalid slice"
 }
 
-func Errors(err error, basePath string) []ErrorDescription {
+func Errors(err error) []ErrorDescription {
+	return getErrors(err, "", "")
+}
+
+func ErrorsBase(err error, basePath string) []ErrorDescription {
+	return getErrors(err, basePath, "")
+}
+
+func JSONErrors(err error) []ErrorDescription {
+	return getErrors(err, "", "json")
+}
+
+func JSONErrorsBase(err error, basePath string) []ErrorDescription {
+	return getErrors(err, basePath, "json")
+}
+
+func getErrors(err error, basePath, structTag string) []ErrorDescription {
 	ret := []ErrorDescription{}
 	if err == nil {
 		return ret
@@ -54,14 +75,14 @@ func Errors(err error, basePath string) []ErrorDescription {
 			if nextBase != "" {
 				nextBase += "."
 			}
-			nextBase += ofe.Name
-			ret = append(ret, Errors(ofe.Err, nextBase)...)
+			nextBase += fieldNameForTag(ofe, structTag)
+			ret = append(ret, getErrors(ofe.Err, nextBase, structTag)...)
 		}
 	case *sliceError:
 		for _, see := range *t {
 			nextBase := basePath
 			nextBase += fmt.Sprintf("[%d]", see.Index)
-			ret = append(ret, Errors(see.Err, nextBase)...)
+			ret = append(ret, getErrors(see.Err, nextBase, structTag)...)
 		}
 	default:
 		ret = append(ret, ErrorDescription{
@@ -70,4 +91,18 @@ func Errors(err error, basePath string) []ErrorDescription {
 		})
 	}
 	return ret
+}
+
+func fieldNameForTag(oef *objectErrorField, structTag string) string {
+	if structTag == "" {
+		return oef.Name
+	}
+	tag := oef.Tag.Get(structTag)
+	if idx := strings.Index(tag, ","); idx != -1 {
+		tag = tag[:idx]
+	}
+	if tag == "" {
+		return oef.Name
+	}
+	return tag
 }

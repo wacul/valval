@@ -82,7 +82,7 @@ func TestE2E(t *testing.T) {
 			}
 			err := vPerson.Validate(p)
 			So(err, ShouldNotBeNil)
-			errs := Errors(err, "")
+			errs := Errors(err)
 			sort.Sort(errorsByKey(errs))
 
 			So(errs[0].Path, ShouldEqual, "Age")

@@ -43,7 +43,7 @@ func (vt *valType) isKindOfType(val interface{}) bool {
 	return false
 }
 
-type valueValidator struct {
+type ValueValidator struct {
 	vt     valType
 	vfuncs []ValidatorFunc
 }
@@ -63,7 +63,7 @@ func validateByFuncs(vfs []ValidatorFunc, val interface{}) error {
 	return nil
 }
 
-func (v *valueValidator) Validate(val interface{}) error {
+func (v *ValueValidator) Validate(val interface{}) error {
 	if val == nil {
 		return nil
 	}
@@ -73,29 +73,29 @@ func (v *valueValidator) Validate(val interface{}) error {
 	return typeMissmatchError(vtStrings[v.vt])
 }
 
-func Number(vfuncs ...ValidatorFunc) Validator {
-	return &valueValidator{
+func Number(vfuncs ...ValidatorFunc) *ValueValidator {
+	return &ValueValidator{
 		vt:     t_number,
 		vfuncs: vfuncs,
 	}
 }
 
-func String(vfuncs ...ValidatorFunc) Validator {
-	return &valueValidator{
+func String(vfuncs ...ValidatorFunc) *ValueValidator {
+	return &ValueValidator{
 		vt:     t_string,
 		vfuncs: vfuncs,
 	}
 }
 
-func Bool(vfuncs ...ValidatorFunc) Validator {
-	return &valueValidator{
+func Bool(vfuncs ...ValidatorFunc) *ValueValidator {
+	return &ValueValidator{
 		vt:     t_bool,
 		vfuncs: vfuncs,
 	}
 }
 
-func Any(vfuncs ...ValidatorFunc) Validator {
-	return &valueValidator{
+func Any(vfuncs ...ValidatorFunc) *ValueValidator {
+	return &ValueValidator{
 		vfuncs: vfuncs,
 	}
 }

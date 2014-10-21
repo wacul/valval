@@ -9,6 +9,11 @@ type Validator interface {
 	Validate(val interface{}) error
 }
 
+type objField struct {
+	value interface{}
+	tag   reflect.StructTag
+}
+
 type ValidatorFunc func(val interface{}) error
 
 func isNilValue(v reflect.Value) bool {
@@ -39,15 +44,15 @@ func unwrapPtr(val interface{}) interface{} {
 	return val
 }
 
-func obj2Map(val interface{}) (map[string]interface{}, error) {
+func obj2Map(val interface{}) (map[string]objField, error) {
 	if val == nil {
 		return nil, nil
 	}
 	if m, ok := val.(map[string]interface{}); ok {
 		return flattenMap(m), nil
 	}
-
-	rv := reflect.ValueOf(val)
+	uv := unwrapPtr(val)
+	rv := reflect.ValueOf(uv)
 	if rv.Kind() == reflect.Struct {
 		return struct2Map(val), nil
 	}
@@ -55,22 +60,35 @@ func obj2Map(val interface{}) (map[string]interface{}, error) {
 	return nil, errors.New("invalid type")
 }
 
-func flattenMap(m map[string]interface{}) map[string]interface{} {
+func fieldMap2objMap(in map[string]objField) map[string]interface{} {
 	ret := map[string]interface{}{}
-	for k, v := range m {
-		ret[k] = unwrapPtr(v)
+	for k, v := range in {
+		ret[k] = v.value
 	}
 	return ret
 }
 
-func struct2Map(val interface{}) map[string]interface{} {
+func flattenMap(m map[string]interface{}) map[string]objField {
+	ret := map[string]objField{}
+	for k, v := range m {
+		ret[k] = objField{
+			value: unwrapPtr(v),
+		}
+	}
+	return ret
+}
+
+func struct2Map(val interface{}) map[string]objField {
 	rv := reflect.ValueOf(val)
 	sv := reflect.TypeOf(val)
-	ret := map[string]interface{}{}
+	ret := map[string]objField{}
 	for i := 0; i < rv.NumField(); i++ {
 		f := sv.Field(i)
 		fv := rv.Field(i)
-		ret[f.Name] = unwrapPtr(fv.Interface())
+		ret[f.Name] = objField{
+			value: unwrapPtr(fv.Interface()),
+			tag:   f.Tag,
+		}
 	}
 
 	return ret
