@@ -1,4 +1,4 @@
-# Valval [ ![Codeship Status for tutuming/valval](https://www.codeship.io/projects/59f9c260-37f9-0132-e8f4-461894a5379e/status)](https://www.codeship.io/projects/41854) [![Coverage Status](https://coveralls.io/repos/tutuming/valval/badge.png?branch=master)](https://coveralls.io/r/tutuming/valval?branch=master)
+# Valval [ ![Codeship Status for wcl48/valval](https://www.codeship.io/projects/59f9c260-37f9-0132-e8f4-461894a5379e/status)](https://www.codeship.io/projects/41854) [![Coverage Status](https://coveralls.io/repos/wcl48/valval/badge.png?branch=master)](https://coveralls.io/r/wcl48/valval?branch=master)
 
 Valval is simple validation library for Go.
 
@@ -85,5 +85,5 @@ if err := personValidator.Validate(personMap); err != nil {
 ## Install
 
 ```
-go get github.com/tutuming/valval
+go get github.com/wcl48/valval
 ```
