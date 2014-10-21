@@ -1,6 +1,4 @@
 /*
- Package valval is gogo
-
-  Hey hey
+ Package valval is validation library
 */
 package valval

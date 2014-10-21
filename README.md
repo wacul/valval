@@ -1,4 +1,4 @@
-# Valval [ ![Codeship Status for wcl48/valval](https://www.codeship.io/projects/59f9c260-37f9-0132-e8f4-461894a5379e/status)](https://www.codeship.io/projects/41854) [![Coverage Status](https://coveralls.io/repos/wcl48/valval/badge.png?branch=master)](https://coveralls.io/r/wcl48/valval?branch=master)
+# Valval [![Build Status](https://drone.io/github.com/wcl48/valval/status.png)](https://drone.io/github.com/wcl48/valval/latest) [![Coverage Status](https://coveralls.io/repos/wcl48/valval/badge.png?branch=master)](https://coveralls.io/r/wcl48/valval?branch=master) [![GoDoc](https://godoc.org/github.com/wcl48/valval?status.svg)](https://godoc.org/github.com/wcl48/valval)
 
 Valval is simple validation library for Go.
 
