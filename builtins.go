@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"unicode/utf8"
 )
 
 func errf(str string, args ...interface{}) error {
@@ -57,7 +58,7 @@ func Regexp(r *regexp.Regexp) ValidatorFunc {
 
 func MinLength(min int) ValidatorFunc {
 	return NewStringValidator(func(str string) error {
-		if len(str) < min {
+		if utf8.RuneCountInString(str) < min {
 			return errf("length must be %d or greater", min)
 		}
 		return nil
@@ -66,7 +67,7 @@ func MinLength(min int) ValidatorFunc {
 
 func MaxLength(max int) ValidatorFunc {
 	return NewStringValidator(func(str string) error {
-		if len(str) > max {
+		if utf8.RuneCountInString(str) > max {
 			return errf("length must be %d or less", max)
 		}
 		return nil
