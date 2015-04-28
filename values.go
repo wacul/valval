@@ -67,6 +67,7 @@ func (v *ValueValidator) Validate(val interface{}) error {
 	if val == nil {
 		return nil
 	}
+
 	if v.vt.isKindOfType(val) {
 		return validateByFuncs(v.vfuncs, val)
 	}
@@ -96,6 +97,7 @@ func Bool(vfuncs ...ValidatorFunc) *ValueValidator {
 
 func Any(vfuncs ...ValidatorFunc) *ValueValidator {
 	return &ValueValidator{
+		vt:     t_any,
 		vfuncs: vfuncs,
 	}
 }
