@@ -14,7 +14,7 @@ func errf(str string, args ...interface{}) error {
 func GreaterThan(min float64) ValidatorFunc {
 	return NewFloatValidator(func(val float64) error {
 		if val <= min {
-			return errf("must be greater than %g", val)
+			return errf("must be greater than %g", min)
 		}
 		return nil
 	})
@@ -23,7 +23,7 @@ func GreaterThan(min float64) ValidatorFunc {
 func Min(min float64) ValidatorFunc {
 	return NewFloatValidator(func(val float64) error {
 		if val < min {
-			return errf("must be %g and grater", val)
+			return errf("must be %g and grater", min)
 		}
 		return nil
 	})
@@ -32,7 +32,7 @@ func Min(min float64) ValidatorFunc {
 func LessThan(max float64) ValidatorFunc {
 	return NewFloatValidator(func(val float64) error {
 		if val >= max {
-			return errf("must be less than %g", val)
+			return errf("must be less than %g", max)
 		}
 		return nil
 	})
@@ -41,7 +41,7 @@ func LessThan(max float64) ValidatorFunc {
 func Max(max float64) ValidatorFunc {
 	return NewFloatValidator(func(val float64) error {
 		if val > max {
-			return errf("must be %g or less", val)
+			return errf("must be %g or less", max)
 		}
 		return nil
 	})
