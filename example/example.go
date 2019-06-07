@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/wcl48/valval"
+	"github.com/wacul/valval"
 )
 
 func main() {
