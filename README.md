@@ -1,4 +1,4 @@
-# Valval [![Build Status](https://drone.io/github.com/wcl48/valval/status.png)](https://drone.io/github.com/wcl48/valval/latest) [![Coverage Status](https://coveralls.io/repos/wcl48/valval/badge.png?branch=master)](https://coveralls.io/r/wcl48/valval?branch=master) [![GoDoc](https://godoc.org/github.com/wcl48/valval?status.svg)](https://godoc.org/github.com/wcl48/valval)
+# Valval [![GoDoc](https://godoc.org/github.com/wacul/valval?status.svg)](https://godoc.org/github.com/wacul/valval)
 
 Valval is simple validation library for Go.
 
@@ -85,5 +85,5 @@ if err := personValidator.Validate(personMap); err != nil {
 ## Install
 
 ```
-go get github.com/wcl48/valval
+go get github.com/wacul/valval
 ```
